@@ -28,7 +28,7 @@ const App = () => {
 			if (window.confirm(message)) {
 				const changedPerson = { ...personAlreadyExists, number: newNumber };
 				personService
-					.update(changedPerson)
+					.update(changedPerson.id, changedPerson)
 					.then((person) => {
 						setPersons(persons.map((p) => (p.id !== person.id ? p : person)));
 						setNewName("");
