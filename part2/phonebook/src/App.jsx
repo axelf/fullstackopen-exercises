@@ -33,11 +33,6 @@ const App = () => {
 			personService.update(changedPerson).then((person) => {
 				setPersons(persons.map((p) => (p.id !== person.id ? p : person)));
 			});
-
-			// const changedPerson = {
-			// 	name: newName,
-			// 	number: newNumber
-			// }
 		}
 
 		const personObj = {
