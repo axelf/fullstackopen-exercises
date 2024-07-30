@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
+import personService from "./services/persons";
 
 const App = () => {
 	const [persons, setPersons] = useState([]);
@@ -11,7 +11,7 @@ const App = () => {
 	const [searchterm, setSearchterm] = useState("");
 
 	useEffect(() => {
-		axios.get("http://localhost:3001/persons").then((response) => {
+		personService.getAll().then((response) => {
 			setPersons(response.data);
 		});
 	}, []);
@@ -24,17 +24,32 @@ const App = () => {
 		});
 
 		if (personAlreadyExists) {
-			alert(`${newName} is already added to phonebook`);
-			return;
+			const message = `${newName} is already added to phonebook, replace the old number with a new one?`;
+			if (!window.confirm(message)) {
+				return;
+			}
+
+			const changedPerson = { ...personAlreadyExists, number: newNumber };
+			personService.update(changedPerson).then((person) => {
+				setPersons(persons.map((p) => (p.id !== person.id ? p : person)));
+			});
+
+			// const changedPerson = {
+			// 	name: newName,
+			// 	number: newNumber
+			// }
 		}
 
 		const personObj = {
 			name: newName,
-			id: persons.length + 1,
+			number: newNumber,
 		};
 
-		setPersons(persons.concat(personObj));
-		setNewName("");
+		personService.create(personObj).then((newPerson) => {
+			setPersons(persons.concat(newPerson));
+			setNewName("");
+			setNewNumber("");
+		});
 	};
 
 	const handleChangeName = (e) => setNewName(e.target.value);
@@ -52,6 +67,16 @@ const App = () => {
 		setPersons(found);
 	};
 
+	const deletePerson = (id) => {
+		personService.remove(id).then((deletedPerson) => {
+			const updatedPersons = persons.filter((person) => {
+				return person.id !== deletedPerson.id;
+			});
+
+			setPersons(updatedPersons);
+		});
+	};
+
 	return (
 		<div>
 			<h2>Phonebook</h2>
@@ -67,7 +92,7 @@ const App = () => {
 			/>
 
 			<h2>Numbers</h2>
-			<Persons persons={persons} />
+			<Persons persons={persons} deletePerson={deletePerson} />
 		</div>
 	);
 };
