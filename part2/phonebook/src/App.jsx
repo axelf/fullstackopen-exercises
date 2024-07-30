@@ -25,14 +25,16 @@ const App = () => {
 
 		if (personAlreadyExists) {
 			const message = `${newName} is already added to phonebook, replace the old number with a new one?`;
-			if (!window.confirm(message)) {
-				return;
+			if (window.confirm(message)) {
+				const changedPerson = { ...personAlreadyExists, number: newNumber };
+				personService.update(changedPerson).then((person) => {
+					setPersons(persons.map((p) => (p.id !== person.id ? p : person)));
+					setNewName("");
+					setNewNumber("");
+				});
 			}
 
-			const changedPerson = { ...personAlreadyExists, number: newNumber };
-			personService.update(changedPerson).then((person) => {
-				setPersons(persons.map((p) => (p.id !== person.id ? p : person)));
-			});
+			return;
 		}
 
 		const personObj = {
