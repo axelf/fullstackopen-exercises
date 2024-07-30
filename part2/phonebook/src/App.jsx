@@ -27,11 +27,16 @@ const App = () => {
 			const message = `${newName} is already added to phonebook, replace the old number with a new one?`;
 			if (window.confirm(message)) {
 				const changedPerson = { ...personAlreadyExists, number: newNumber };
-				personService.update(changedPerson).then((person) => {
-					setPersons(persons.map((p) => (p.id !== person.id ? p : person)));
-					setNewName("");
-					setNewNumber("");
-				});
+				personService
+					.update(changedPerson)
+					.then((person) => {
+						setPersons(persons.map((p) => (p.id !== person.id ? p : person)));
+						setNewName("");
+						setNewNumber("");
+					})
+					.catch(() => {
+						console.log("Update failed! Entry not found!");
+					});
 			}
 
 			return;
@@ -65,13 +70,18 @@ const App = () => {
 	};
 
 	const deletePerson = (id) => {
-		personService.remove(id).then((deletedPerson) => {
-			const updatedPersons = persons.filter((person) => {
-				return person.id !== deletedPerson.id;
-			});
+		personService
+			.remove(id)
+			.then((deletedPerson) => {
+				const personList = persons.filter((person) => {
+					return person.id !== deletedPerson.id;
+				});
 
-			setPersons(updatedPersons);
-		});
+				setPersons(personList);
+			})
+			.catch(() => {
+				console.log("Entry not found");
+			});
 	};
 
 	return (
