@@ -1,0 +1,20 @@
+.alert {
+	padding: 1rem;
+	margin: 0 0 1rem;
+	background-color: var(--alert-bg-color);
+	border: 1px solid var(--alert-border-color);
+	color: var(--alert-color);
+
+}
+
+.alert--error {
+	--alert-bg-color: hsl(0, 84%, 95%);
+	--alert-border-color: hsl(0, 84%, 51%);
+	--alert-color: hsl(0, 84%, 51%);
+}
+
+.alert--success {
+	--alert-bg-color: hsl(86, 84%, 94%);
+	--alert-border-color: hsl(86, 91%, 27%);
+	--alert-color: hsl(86, 91%, 27%);
+}

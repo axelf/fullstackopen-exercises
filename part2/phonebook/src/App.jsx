@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
+import Notification from "./components/Notification";
 import personService from "./services/persons";
 
 const App = () => {
@@ -9,6 +10,8 @@ const App = () => {
 	const [newName, setNewName] = useState("");
 	const [newNumber, setNewNumber] = useState("");
 	const [searchterm, setSearchterm] = useState("");
+	const [message, setMessage] = useState(null);
+	const [messageType, setMessageType] = useState(null);
 
 	useEffect(() => {
 		personService.getAll().then((response) => {
@@ -35,7 +38,10 @@ const App = () => {
 						setNewNumber("");
 					})
 					.catch(() => {
-						console.log("Update failed! Entry not found!");
+						setMessage(
+							`Information of ${changedPerson.name} has already been removed from server`
+						);
+						setMessageType("error");
 					});
 			}
 
@@ -51,6 +57,13 @@ const App = () => {
 			setPersons(persons.concat(newPerson));
 			setNewName("");
 			setNewNumber("");
+			setMessage(`Added ${newPerson.name}`);
+			setMessageType("success");
+
+			window.setTimeout(() => {
+				setMessage(null);
+				setMessageType(null);
+			}, 5000);
 		});
 	};
 
@@ -87,6 +100,8 @@ const App = () => {
 	return (
 		<div>
 			<h2>Phonebook</h2>
+			<Notification message={message} type={messageType} />
+
 			<Filter searchterm={searchterm} onChange={handleFilter} />
 
 			<h2>Add a new</h2>
